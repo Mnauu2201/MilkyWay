@@ -1,0 +1,108 @@
+/* src/pages/EventDetail.css */
+.event-detail-page {
+    padding-top: 80px;
+    /* Tránh header che mất */
+    padding-bottom: 4rem;
+    background-color: #fff;
+    min-height: 100vh;
+    color: #333;
+}
+
+.event-detail-page .container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+    text-align: left;
+    /* Đảm bảo văn bản căn trái */
+}
+
+.back-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: none;
+    border: none;
+    color: #666;
+    font-size: 1rem;
+    cursor: pointer;
+    margin-bottom: 2rem;
+    padding: 0;
+}
+
+.back-btn:hover {
+    color: #ff69b4;
+}
+
+.detail-header h1 {
+    font-size: 2.5rem;
+    font-weight: 800;
+    margin-bottom: 1rem;
+    line-height: 1.2;
+    color: #333;
+}
+
+.meta-info {
+    display: flex;
+    gap: 2rem;
+    margin-bottom: 2rem;
+    color: #666;
+    font-size: 1.1rem;
+}
+
+.meta-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.detail-image {
+    width: 100%;
+    margin-bottom: 2rem;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+.detail-image img {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+.detail-description h3,
+.detail-video h3 {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+    color: #333;
+    border-left: 4px solid #ff69b4;
+    padding-left: 1rem;
+}
+
+.detail-description p {
+    line-height: 1.8;
+    color: #555;
+    font-size: 1.1rem;
+    margin-bottom: 2rem;
+    white-space: pre-line;
+    /* Giữ các dấu xuống dòng */
+}
+
+/* Video Responsive */
+.video-container {
+    position: relative;
+    padding-bottom: 56.25%;
+    /* Tỷ lệ 16:9 */
+    height: 0;
+    overflow: hidden;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+.video-container iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: none;
+}

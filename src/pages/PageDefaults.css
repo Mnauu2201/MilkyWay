@@ -1,0 +1,41 @@
+.page-container {
+    padding-top: 80px;
+    /* Tránh header che mất */
+    min-height: 80vh;
+    background: #fff;
+    color: #333;
+}
+
+.page-header {
+    background: linear-gradient(135deg, #FFB6C1 0%, #FFF5F7 100%);
+    padding: 3rem 1rem;
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.page-header h1 {
+    font-size: 2.5rem;
+    color: #333;
+    margin: 0;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+}
+
+/* Grid cho trang Member */
+.members-grid-page {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 2rem;
+    padding-bottom: 3rem;
+}
+
+.member-card-page img {
+    width: 100%;
+    height: 300px;
+    object-fit: cover;
+    border-radius: 15px;
+}

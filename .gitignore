@@ -25,3 +25,6 @@ dist-ssr
 
 #text
 milkyway.txt
+
+# Firebase config file
+src/firebase/config.js
