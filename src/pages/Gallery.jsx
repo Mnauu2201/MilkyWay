@@ -1,6 +1,6 @@
 // src/pages/Gallery.jsx - Fixed
 import { useState, useEffect } from "react";
-import { db } from "../firebase/config";
+import { db } from "@/firebase/config.js";
 import { collection, getDocs, query, orderBy } from "firebase/firestore";
 // eslint-disable-next-line no-unused-vars
 import { motion } from "framer-motion";

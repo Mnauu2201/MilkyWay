@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { doc, getDoc } from "firebase/firestore";
-import { db } from "../firebase/config";
+import { db } from "@/firebase/config.js";
 import { FiArrowLeft, FiCalendar, FiVideo } from "react-icons/fi";
 import "./GalleryDetail.css";
 
