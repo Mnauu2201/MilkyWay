@@ -1,30 +1,52 @@
 // eslint-disable-next-line no-unused-vars
-import { motion } from 'framer-motion';
-import { FiInstagram, FiFacebook, FiYoutube, FiMail, FiPhone, FiMapPin, FiHeart } from 'react-icons/fi';
-import { FaTiktok } from 'react-icons/fa';
+import { motion } from "framer-motion";
+import {
+  FiInstagram,
+  FiFacebook,
+  FiYoutube,
+  FiMail,
+  FiPhone,
+  FiMapPin,
+  FiHeart,
+} from "react-icons/fi";
+import { FaTiktok } from "react-icons/fa";
 
-import './Footer.css';
+import "./Footer.css";
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
 
   const quickLinks = [
-    { name: 'Trang chủ', href: '#home' },
-    { name: 'Giới thiệu', href: '#about' },
-    { name: 'Thành viên', href: '#members' },
-    { name: 'Thư viện', href: '#gallery' },
+    { name: "Trang chủ", href: "/" },
+    { name: "Giới thiệu", href: "/about" },
+    { name: "Thành viên", href: "/members" },
+    { name: "Thư viện", href: "/gallery" },
   ];
 
   const socialLinks = [
-    { icon: FiInstagram, href: '#', label: 'Instagram', color: '#E4405F' },
-    { icon: FiFacebook, href: 'https://www.facebook.com/sasorianh', label: 'Facebook', color: '#1877F2' },
-    { icon: FaTiktok, href: 'https://www.tiktok.com/@meot.297', label: 'TikTok', color: '#FF0000' },
+    { icon: FiInstagram, href: "#", label: "Instagram", color: "#E4405F" },
+    {
+      icon: FiFacebook,
+      href: "https://www.facebook.com/VuDoanMilkyW",
+      label: "Facebook",
+      color: "#1877F2",
+    },
+    {
+      icon: FaTiktok,
+      href: "https://www.tiktok.com/@meot.297",
+      label: "TikTok",
+      color: "#FF0000",
+    },
   ];
 
   const contactInfo = [
-    { icon: FiMail, text: 'contact@milkywaydance.com', href: 'mailto:contact@milkywaydance.com' },
-    { icon: FiPhone, text: '+84 123 456 789', href: 'tel:+84123456789' },
-    { icon: FiMapPin, text: 'Hà Nội, Việt Nam', href: '#' },
+    {
+      icon: FiMail,
+      text: "maianh.meot@gmail.com",
+      href: "mailto:maianh.meot@gmail.com",
+    },
+    { icon: FiPhone, text: "+84 82 689 9493", href: "tel:+84826899493" },
+    { icon: FiMapPin, text: "Hà Nội, Việt Nam", href: "#" },
   ];
 
   return (
@@ -46,10 +68,12 @@ const Footer = () => {
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
           >
-            <img src="/logo.png" alt="Milkyway Dance" className="footer-logo" />
-            <p className="footer-tagline">
-              Nơi đam mê nhảy múa được thắp sáng
-            </p>
+            <img
+              src="/MilkyWay-removebg-preview_.png"
+              alt="Milkyway Dance"
+              className="footer-logo"
+            />
+            <p className="footer-tagline">Nơi đam mê nhảy múa được thắp sáng</p>
             <div className="social-icons">
               {socialLinks.map((social, index) => (
                 <motion.a
@@ -57,7 +81,7 @@ const Footer = () => {
                   href={social.href}
                   className="footer-social-icon"
                   aria-label={social.label}
-                  style={{ '--hover-color': social.color }}
+                  style={{ "--hover-color": social.color }}
                   initial={{ opacity: 0, scale: 0 }}
                   whileInView={{ opacity: 1, scale: 1 }}
                   viewport={{ once: true }}
@@ -137,7 +161,10 @@ const Footer = () => {
             <p className="newsletter-text">
               Đăng ký để không bỏ lỡ sự kiện và hoạt động mới
             </p>
-            <form className="newsletter-form" onSubmit={(e) => e.preventDefault()}>
+            <form
+              className="newsletter-form"
+              onSubmit={(e) => e.preventDefault()}
+            >
               <input
                 type="email"
                 placeholder="Email của bạn"
@@ -165,7 +192,13 @@ const Footer = () => {
           transition={{ duration: 0.6, delay: 0.8 }}
         >
           <p className="copyright">
-            © {currentYear} MilkyWay Dance. Website made by Nguyen Quang Anh <FiHeart className="heart-icon" />
+            © {currentYear} MilkyWay Dance. Website made by{" "}
+            <strong>
+              <a href="https://www.facebook.com/wwangh.ahn/">
+                Nguyen Quang Anh
+              </a>
+            </strong>{" "}
+            <FiHeart className="heart-icon" />
           </p>
         </motion.div>
       </div>

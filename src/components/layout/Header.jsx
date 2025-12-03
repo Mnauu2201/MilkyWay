@@ -2,13 +2,7 @@ import { useState, useEffect } from "react";
 import { AnimatePresence } from "framer-motion";
 // eslint-disable-next-line no-unused-vars
 import { motion } from "framer-motion";
-import {
-  FiMenu,
-  FiX,
-  FiInstagram,
-  FiFacebook,
-  FiYoutube,
-} from "react-icons/fi";
+import { FiMenu, FiX, FiInstagram, FiFacebook } from "react-icons/fi";
 import { FaTiktok } from "react-icons/fa";
 import "./Header.css";
 import { Link, NavLink } from "react-router-dom";
@@ -26,18 +20,18 @@ const Header = () => {
   }, []);
 
   const navItems = [
-    { name: "Trang chủ", href: "#home" },
-    { name: "Giới thiệu", href: "#about" },
-    { name: "Thành viên", href: "#members" },
-    { name: "Thư viện", href: "#gallery" },
-    { name: "Liên hệ", href: "#contact" },
+    { name: "Trang chủ", href: "/" },
+    { name: "Giới thiệu", href: "/about" },
+    { name: "Thành viên", href: "/members" },
+    { name: "Thư viện", href: "/gallery" },
+    { name: "Liên hệ", href: "/contact" },
   ];
 
   const socialLinks = [
     { icon: FiInstagram, href: "#", label: "Instagram" },
     {
       icon: FiFacebook,
-      href: "https://www.facebook.com/sasorianh",
+      href: "https://www.facebook.com/VuDoanMilkyW",
       label: "Facebook",
     },
     {

@@ -26,13 +26,27 @@
     box-sizing: border-box;
 }
 
+/* ========== VIDEO BACKGROUND STYLES ========== */
+.hero-video-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: 0;
+}
+
+/* Overlay để làm tối video và làm nổi chữ */
 .hero-overlay {
     position: absolute;
     inset: 0;
-    background:
-        radial-gradient(circle at 20% 50%, rgba(255, 182, 193, 0.2) 0%, transparent 50%),
-        radial-gradient(circle at 80% 50%, rgba(255, 192, 203, 0.2) 0%, transparent 50%);
+    background: rgba(0, 0, 0, 0.4);
+    /* Điều chỉnh độ tối ở đây: 0.4 = 40% tối */
+    z-index: 1;
 }
+
+/* ============================================== */
 
 .hero-content {
     position: relative;
@@ -44,9 +58,12 @@
 .hero-title {
     font-size: clamp(2.5rem, 8vw, 5rem);
     font-weight: 800;
-    color: #333;
+    color: #fff;
+    /* Đổi màu chữ sang trắng để nổi bật trên video */
     margin-bottom: 1.5rem;
     line-height: 1.2;
+    text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.5);
+    /* Thêm shadow cho chữ */
 }
 
 .gradient-text {
@@ -72,10 +89,13 @@
 
 .hero-subtitle {
     font-size: clamp(1.1rem, 3vw, 1.5rem);
-    color: #666;
+    color: #fff;
+    /* Đổi màu chữ sang trắng */
     margin-bottom: 3rem;
-    font-weight: 300;
+    font-weight: 400;
     letter-spacing: 0.5px;
+    text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.5);
+    /* Thêm shadow */
 }
 
 .hero-buttons {
@@ -136,6 +156,7 @@
     position: absolute;
     border-radius: 50%;
     pointer-events: none;
+    z-index: 1;
 }
 
 .element-1 {
@@ -166,15 +187,17 @@
     flex-direction: column;
     align-items: center;
     gap: 0.5rem;
-    color: #FFB6C1;
+    color: #fff;
+    /* Đổi màu sang trắng */
     font-size: 0.9rem;
     font-weight: 500;
+    z-index: 2;
 }
 
 .scroll-line {
     width: 2px;
     height: 40px;
-    background: linear-gradient(to bottom, #FFB6C1, transparent);
+    background: linear-gradient(to bottom, #fff, transparent);
 }
 
 /* Stats Section */

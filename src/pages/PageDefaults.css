@@ -39,3 +39,427 @@
     object-fit: cover;
     border-radius: 15px;
 }
+
+
+
+
+/* src/pages/PageDefaults.css - Thêm phần này */
+
+/* Cấu trúc chung cho các Section */
+.about-section {
+    margin-bottom: 4rem;
+    padding: 2rem;
+    border-radius: 15px;
+    background: #f7f7f7;
+    /* Nền nhẹ nhàng */
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+}
+
+.about-section h2,
+.contact-info h2 {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #FF69B4;
+    /* Màu chủ đạo */
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border-bottom: 3px solid #FFB6C1;
+    padding-bottom: 10px;
+}
+
+.about-section p,
+.about-section ul {
+    font-size: 1.05rem;
+    line-height: 1.7;
+    color: #555;
+}
+
+/* Card Tầm nhìn/Sứ mệnh */
+.mission-cards {
+    display: flex;
+    gap: 20px;
+}
+
+.mission-cards .card {
+    flex: 1;
+    padding: 20px;
+    border-radius: 10px;
+    background: #fff;
+    border: 1px solid #eee;
+}
+
+.mission-cards .card h3 {
+    color: #333;
+    font-size: 1.3rem;
+    margin-top: 0;
+}
+
+/* Trang Liên hệ */
+.contact-grid {
+    display: grid;
+    grid-template-columns: 1fr 1.5fr;
+    /* 1 cột cho info, 1.5 cột cho form */
+    gap: 40px;
+    padding-bottom: 4rem;
+}
+
+.contact-info .info-item {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 1rem;
+    color: #333;
+}
+
+.contact-info p {
+    margin: 0;
+    font-size: 1.1rem;
+}
+
+.map-embed {
+    width: 100%;
+    height: 300px;
+    border-radius: 15px;
+    margin-top: 2rem;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+/* Form */
+.contact-form input,
+.contact-form textarea {
+    width: 100%;
+    padding: 15px;
+    margin-bottom: 15px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 1rem;
+    box-sizing: border-box;
+    transition: border-color 0.3s;
+}
+
+.contact-form input:focus,
+.contact-form textarea:focus {
+    border-color: #FF69B4;
+    outline: none;
+}
+
+.btn-submit {
+    display: block;
+    width: 100%;
+    padding: 15px;
+    background: linear-gradient(135deg, #FFB6C1 0%, #FF69B4 100%);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-submit:hover {
+    opacity: 0.9;
+    transform: translateY(-2px);
+}
+
+/* Responsive cho thiết bị di động */
+@media (max-width: 992px) {
+    .contact-grid {
+        grid-template-columns: 1fr;
+        /* Stack các cột lại */
+    }
+
+    .mission-cards {
+        flex-direction: column;
+    }
+}
+
+
+
+
+/* src/pages/PageDefaults.css - THÊM CÁC STYLE TỪ HOME CHO THẺ THÀNH VIÊN */
+
+.members-grid-page {
+    /* Đổi tên class members-grid cũ thành members-grid-page cho dễ phân biệt */
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    /* Điều chỉnh kích thước */
+    gap: 30px;
+    padding: 2rem 0;
+}
+
+.member-card {
+    background: #fff;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+}
+
+.member-image {
+    position: relative;
+    width: 100%;
+    height: 350px;
+    /* Chiều cao cố định cho ảnh */
+    overflow: hidden;
+}
+
+.member-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.4s ease;
+}
+
+/* Hiệu ứng overlay khi hover (Bạn có thể bỏ qua nếu không cần) */
+.member-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    padding: 1rem;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.7) 0%, transparent 100%);
+    color: white;
+    transform: translateY(100%);
+    transition: transform 0.4s ease;
+}
+
+.member-card:hover .member-overlay {
+    transform: translateY(0);
+}
+
+.member-card:hover .member-image img {
+    transform: scale(1.05);
+}
+
+.member-specialty {
+    font-size: 0.9rem;
+    font-weight: 500;
+    margin: 0;
+    opacity: 0.8;
+}
+
+.member-info {
+    padding: 1.5rem;
+    text-align: center;
+}
+
+.member-name {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #333;
+    margin-bottom: 0.3rem;
+}
+
+.member-role {
+    color: #FF69B4;
+    font-weight: 600;
+    margin: 0;
+}
+
+
+/* src/pages/PageDefaults.css */
+
+/* Page Container */
+.page-container {
+    min-height: 100vh;
+    padding-top: 80px;
+}
+
+/* Page Header */
+.page-header {
+    background: linear-gradient(135deg, #FFB6C1 0%, #FF69B4 100%);
+    padding: 4rem 2rem;
+    text-align: center;
+    color: white;
+}
+
+.page-header h1 {
+    font-size: 2.5rem;
+    margin: 0 0 1rem 0;
+    font-weight: 700;
+}
+
+.page-header p {
+    font-size: 1.1rem;
+    margin: 0;
+    opacity: 0.95;
+}
+
+/* Page Content */
+.page-content {
+    padding: 4rem 2rem;
+}
+
+/* Members Grid - GIỐNG HOME PAGE */
+.members-grid-page {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* Member Card */
+.member-card {
+    background: white;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.member-card:hover {
+    box-shadow: 0 8px 30px rgba(255, 105, 180, 0.3);
+    transform: translateY(-5px);
+}
+
+/* Member Image Container */
+.member-image {
+    position: relative;
+    width: 100%;
+    padding-top: 100%;
+    /* Tạo hình vuông */
+    overflow: hidden;
+    background: #f0f0f0;
+}
+
+.member-image img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    transition: transform 0.3s ease;
+}
+
+.member-card:hover .member-image img {
+    transform: scale(1.05);
+}
+
+/* Member Overlay */
+.member-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(to top, rgba(255, 105, 180, 0.9), transparent);
+    padding: 1rem;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.member-card:hover .member-overlay {
+    opacity: 1;
+}
+
+.member-specialty {
+    color: white;
+    font-weight: 600;
+    margin: 0;
+    font-size: 0.9rem;
+}
+
+/* Member Info */
+.member-info {
+    padding: 1.5rem;
+    text-align: center;
+}
+
+.member-name {
+    margin: 0 0 0.5rem 0;
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #333;
+}
+
+.member-role {
+    margin: 0;
+    color: #FF69B4;
+    font-size: 0.95rem;
+    font-weight: 500;
+}
+
+/* Container */
+.container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 2rem;
+}
+
+/* Loading & Empty Messages */
+.loading-message,
+.empty-message {
+    text-align: center;
+    padding: 3rem;
+    color: #999;
+    font-size: 1.1rem;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+    .members-grid-page {
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 1.5rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .page-header {
+        padding: 3rem 1rem;
+    }
+
+    .page-header h1 {
+        font-size: 2rem;
+    }
+
+    .page-header p {
+        font-size: 1rem;
+    }
+
+    .page-content {
+        padding: 3rem 1rem;
+    }
+
+    .members-grid-page {
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 1rem;
+    }
+
+    .member-info {
+        padding: 1rem;
+    }
+
+    .member-name {
+        font-size: 1.1rem;
+    }
+
+    .member-role {
+        font-size: 0.85rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .members-grid-page {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.8rem;
+    }
+
+    .member-image {
+        padding-top: 100%;
+    }
+
+    .member-info {
+        padding: 0.8rem;
+    }
+
+    .member-name {
+        font-size: 1rem;
+    }
+}

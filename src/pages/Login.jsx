@@ -1,109 +1,132 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { FiLock, FiUser, FiEye, FiEyeOff } from "react-icons/fi";
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { auth } from "../firebase/config";
 import "./Login.css";
 
 const Login = () => {
-  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
   const navigate = useNavigate();
 
   // Kiểm tra đã đăng nhập chưa
   useEffect(() => {
-    const localSession = localStorage.getItem("milkyway_admin_session");
-    const sessionSession = sessionStorage.getItem("milkyway_admin_session");
+    const unsubscribe = auth.onAuthStateChanged((user) => {
+      if (user) {
+        // Đã đăng nhập, chuyển về admin
+        navigate("/admin", { replace: true });
+      }
+    });
 
-    if (localSession || sessionSession) {
-      // Đã đăng nhập rồi, chuyển về admin
-      navigate("/admin", { replace: true });
-    }
+    return () => unsubscribe();
   }, [navigate]);
 
-  // ⚠️ QUAN TRỌNG: Đổi username và password của bạn ở đây
-  const ADMIN_USERNAME = "admin";
-  const ADMIN_PASSWORD = "milkyway2024";
-
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
+    setLoading(true);
 
-    // Kiểm tra username và password
-    if (username === ADMIN_USERNAME && password === ADMIN_PASSWORD) {
-      // Lưu session
-      const sessionData = {
-        isAuthenticated: true,
-        loginTime: Date.now(),
-        username: username,
-      };
+    try {
+      // Đăng nhập với Firebase Authentication
+      const userCredential = await signInWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
 
+      console.log("✅ Đăng nhập thành công:", userCredential.user.email);
+
+      // Lưu session nếu "Ghi nhớ đăng nhập"
       if (rememberMe) {
-        // Lưu vĩnh viễn
-        localStorage.setItem(
-          "milkyway_admin_session",
-          JSON.stringify(sessionData)
-        );
+        localStorage.setItem("milkyway_admin_session", "true");
       } else {
-        // Lưu tạm (xóa khi đóng trình duyệt)
-        sessionStorage.setItem(
-          "milkyway_admin_session",
-          JSON.stringify(sessionData)
-        );
+        sessionStorage.setItem("milkyway_admin_session", "true");
       }
 
-      // Chuyển đến trang admin
+      // Chuyển hướng về trang admin
       navigate("/admin", { replace: true });
-    } else {
-      setError("Tên đăng nhập hoặc mật khẩu không đúng!");
+    } catch (error) {
+      console.error("❌ Lỗi đăng nhập:", error);
+
+      // Xử lý các loại lỗi
+      switch (error.code) {
+        case "auth/invalid-email":
+          setError("Email không hợp lệ.");
+          break;
+        case "auth/user-disabled":
+          setError("Tài khoản đã bị vô hiệu hóa.");
+          break;
+        case "auth/user-not-found":
+          setError("Không tìm thấy tài khoản với email này.");
+          break;
+        case "auth/wrong-password":
+          setError("Mật khẩu không đúng.");
+          break;
+        case "auth/invalid-credential":
+          setError("Email hoặc mật khẩu không đúng.");
+          break;
+        case "auth/too-many-requests":
+          setError("Quá nhiều lần đăng nhập thất bại. Vui lòng thử lại sau.");
+          break;
+        default:
+          setError("Đăng nhập thất bại. Vui lòng thử lại.");
+      }
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <div className="login-page">
       <div className="login-container">
-        <div className="login-card">
-          <div className="login-header">
-            <div className="lock-icon">
-              <FiLock />
-            </div>
-            <h1>Đăng nhập Admin</h1>
-            <p>Milkyway Dance Management</p>
+        <div className="login-box">
+          <div className="lock-icon">
+            <FiLock />
           </div>
+          <h2 className="login-title">Đăng nhập Quản trị</h2>
 
-          <form onSubmit={handleSubmit} className="login-form">
-            {error && <div className="error-message">{error}</div>}
+          {error && <p className="error-message">{error}</p>}
 
+          <form className="login-form" onSubmit={handleSubmit}>
             <div className="form-group">
-              <label>Tên đăng nhập</label>
-              <div className="input-wrapper">
+              <label htmlFor="email">Email</label>
+              <div className="form-control">
                 <FiUser className="input-icon" />
                 <input
-                  type="text"
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
-                  placeholder="Nhập tên đăng nhập"
+                  type="email"
+                  id="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="Nhập email"
                   required
+                  disabled={loading}
                 />
               </div>
             </div>
 
             <div className="form-group">
-              <label>Mật khẩu</label>
-              <div className="input-wrapper">
+              <label htmlFor="password">Mật khẩu</label>
+              <div className="form-control password-control">
                 <FiLock className="input-icon" />
                 <input
                   type={showPassword ? "text" : "password"}
+                  id="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="Nhập mật khẩu"
                   required
+                  disabled={loading}
                 />
                 <button
                   type="button"
                   className="toggle-password"
                   onClick={() => setShowPassword(!showPassword)}
+                  disabled={loading}
                 >
                   {showPassword ? <FiEyeOff /> : <FiEye />}
                 </button>
@@ -116,24 +139,24 @@ const Login = () => {
                   type="checkbox"
                   checked={rememberMe}
                   onChange={(e) => setRememberMe(e.target.checked)}
+                  disabled={loading}
                 />
                 <span>Ghi nhớ đăng nhập</span>
               </label>
             </div>
 
-            <button type="submit" className="login-btn">
-              Đăng nhập
+            <button type="submit" className="login-btn" disabled={loading}>
+              {loading ? "Đang đăng nhập..." : "Đăng nhập"}
             </button>
           </form>
 
           <div className="login-footer">
             <p className="hint">
-              💡 Mặc định: <strong>admin</strong> /{" "}
-              <strong>milkyway2024</strong>
-            </p>
-            <p className="warning">
-              ⚠️ Đổi mật khẩu trong file <code>Login.jsx</code> trước khi
-              deploy!
+              💡 Liên hệ:{" "}
+              <a href="https://www.facebook.com/wwangh.ahn/">
+                <strong>Quang Anh</strong>
+              </a>{" "}
+              để được cấp tài khoản
             </p>
           </div>
         </div>

@@ -13,10 +13,11 @@ import Login from "./pages/Login";
 import ProtectedRoute from "./components/ProtectedRoute";
 import "./App.css";
 import EventDetail from "./pages/EventDetail";
-import About from "./pages/About"; // Thêm
-import Members from "./pages/Members"; // Thêm
-import Contact from "./pages/Contact"; // Thêm
-import Gallery from "./pages/Gallery"; // Thêm
+import About from "./pages/About";
+import Members from "./pages/Members";
+import Contact from "./pages/Contact";
+import Gallery from "./pages/Gallery";
+import GalleryDetail from "./pages/GalleryDetail";
 
 function AppContent() {
   const location = useLocation();
@@ -36,6 +37,9 @@ function AppContent() {
           <Route path="/members" element={<Members />} />
           <Route path="/gallery" element={<Gallery />} />
           <Route path="/contact" element={<Contact />} />
+          <Route path="/gallery/:id" element={<GalleryDetail />} />
+
+          {/* Protected Admin Route */}
           <Route
             path="/admin"
             element={

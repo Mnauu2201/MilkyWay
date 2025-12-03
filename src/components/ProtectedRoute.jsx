@@ -1,33 +1,38 @@
+import { useEffect, useState } from "react";
 import { Navigate } from "react-router-dom";
+import { auth } from "../firebase/config";
 
 const ProtectedRoute = ({ children }) => {
-  // Kiểm tra session từ localStorage hoặc sessionStorage
-  const checkAuth = () => {
-    const localSession = localStorage.getItem("milkyway_admin_session");
-    const sessionSession = sessionStorage.getItem("milkyway_admin_session");
+  const [loading, setLoading] = useState(true);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
-    if (localSession) {
-      const session = JSON.parse(localSession);
-      return session.isAuthenticated;
-    }
+  useEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged((user) => {
+      setIsAuthenticated(!!user);
+      setLoading(false);
+    });
 
-    if (sessionSession) {
-      const session = JSON.parse(sessionSession);
-      return session.isAuthenticated;
-    }
+    return () => unsubscribe();
+  }, []);
 
-    return false;
-  };
-
-  const isAuthenticated = checkAuth();
-
-  // Nếu chưa đăng nhập, chuyển đến trang login
-  if (!isAuthenticated) {
-    return <Navigate to="/admin/login" replace />;
+  if (loading) {
+    return (
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          height: "100vh",
+          fontSize: "1.2rem",
+          color: "#FF69B4",
+        }}
+      >
+        Đang kiểm tra xác thực...
+      </div>
+    );
   }
 
-  // Nếu đã đăng nhập, hiển thị trang admin
-  return children;
+  return isAuthenticated ? children : <Navigate to="/admin/login" replace />;
 };
 
 export default ProtectedRoute;

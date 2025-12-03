@@ -315,3 +315,60 @@
         font-size: 0.8rem;
     }
 }
+
+.login-form .form-group input {
+    color: #FF69B4;
+}
+
+
+.login-form .form-group .form-control input {
+    padding-left: 3.5rem;
+}
+
+/* src/pages/Login.css */
+
+.login-form .form-group {
+    /* 1. Đảm bảo phần tử cha có position: relative để định vị icon */
+    position: relative;
+    margin-bottom: 1.5rem;
+}
+
+/* src/pages/Login.css */
+
+.login-form .form-group .form-control input {
+    width: 100%;
+    height: 3.5rem;
+    /* Chiều cao input */
+    padding: 0.5rem 1rem;
+    /* Padding mặc định */
+    border: 2px solid #FFB6C1;
+    border-radius: 12px;
+    font-size: 1rem;
+
+    /* 1. FIX MÀU CHỮ */
+    color: #333;
+
+    /* 2. FIX TRÙNG ICON TRÁI (Username/Lock) */
+    padding-left: 3.5rem;
+    /* Tăng padding trái để chừa chỗ cho icon */
+
+    /* 3. FIX TRÙNG ICON PHẢI (Eye/EyeOff) */
+    padding-right: 3.5rem;
+    /* Tăng padding phải để chừa chỗ cho icon toggle */
+
+    background-color: white;
+    /* Đảm bảo nền input không phải màu trắng tinh */
+    box-sizing: border-box;
+}
+
+/* ⚠️ Nếu chữ Placeholder bị mờ/trùng màu, hãy thêm đoạn này: */
+.login-form .form-group .form-control input::placeholder {
+    color: #999;
+    /* Đặt màu tối cho placeholder */
+    opacity: 1;
+    /* Đảm bảo placeholder không bị mờ quá */
+}
+
+a {
+    text-decoration: none;
+}

@@ -1,7 +1,8 @@
-// src/pages/Admin.jsx (Cập nhật)
+// src/pages/Admin.jsx (Fixed - Firebase Authentication)
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { db } from "../firebase/config"; // Import DB
+import { db, auth } from "../firebase/config";
+import { signOut } from "firebase/auth";
 import {
   collection,
   getDocs,
@@ -9,6 +10,9 @@ import {
   updateDoc,
   deleteDoc,
   doc,
+  serverTimestamp,
+  query,
+  orderBy,
 } from "firebase/firestore";
 import {
   FiPlus,
@@ -16,10 +20,8 @@ import {
   FiTrash2,
   FiSave,
   FiX,
-  FiUpload,
+  FiImage,
   FiLogOut,
-  FiVideo,
-  FiAlignLeft,
 } from "react-icons/fi";
 import LogoutModal from "../components/LogoutModal";
 import "./Admin.css";
@@ -27,10 +29,8 @@ import "./Admin.css";
 const Admin = () => {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("members");
-
-  // State dữ liệu từ Firebase
   const [members, setMembers] = useState([]);
-  const [events, setEvents] = useState([]);
+  const [gallery, setGallery] = useState([]);
   const [loading, setLoading] = useState(true);
 
   const [showForm, setShowForm] = useState(false);
@@ -38,402 +38,530 @@ const Admin = () => {
   const [formData, setFormData] = useState({});
   const [showLogoutModal, setShowLogoutModal] = useState(false);
 
-  // 1. Lấy dữ liệu từ Firebase khi load trang
-  useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true);
-      try {
-        const memSnapshot = await getDocs(collection(db, "members"));
-        const evSnapshot = await getDocs(collection(db, "events"));
+  // State cho gallery images (array of URLs)
+  const [galleryImageUrls, setGalleryImageUrls] = useState([]);
+  const [newImageUrl, setNewImageUrl] = useState("");
 
-        setMembers(
-          memSnapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id }))
+  // 1. Lấy dữ liệu từ Firebase
+  const fetchData = async () => {
+    setLoading(true);
+    try {
+      // Fetch Members
+      const memberSnapshot = await getDocs(collection(db, "members"));
+      setMembers(
+        memberSnapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id }))
+      );
+
+      // Fetch Gallery - SẮP XẾP MỚI NHẤT TRƯỚC
+      try {
+        const galleryQuery = query(
+          collection(db, "gallery"),
+          orderBy("createdAt", "desc") // desc = mới nhất trước
         );
-        setEvents(
-          evSnapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id }))
-        );
-      } catch (error) {
-        console.error("Lỗi lấy dữ liệu:", error);
+        const gallerySnapshot = await getDocs(galleryQuery);
+        const galleryData = gallerySnapshot.docs.map((doc) => {
+          const data = doc.data();
+          return {
+            ...data,
+            id: doc.id,
+            // ĐẢM BẢO images luôn là mảng
+            images: Array.isArray(data.images) ? data.images : [],
+          };
+        });
+        setGallery(galleryData);
+      } catch (sortError) {
+        console.warn("Không thể sắp xếp, lấy dữ liệu thường:", sortError);
+        // Fallback: lấy không sắp xếp
+        const gallerySnapshot = await getDocs(collection(db, "gallery"));
+        const galleryData = gallerySnapshot.docs.map((doc) => {
+          const data = doc.data();
+          return {
+            ...data,
+            id: doc.id,
+            images: Array.isArray(data.images) ? data.images : [],
+          };
+        });
+        setGallery(galleryData);
       }
+    } catch (error) {
+      console.error("Lỗi khi lấy dữ liệu:", error);
+      alert("Có lỗi khi tải dữ liệu: " + error.message);
+    } finally {
       setLoading(false);
-    };
+    }
+  };
+
+  useEffect(() => {
     fetchData();
   }, []);
 
-  const handleImageUpload = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      // Lưu ý: Upload ảnh dạng base64 lên Firestore có giới hạn dung lượng.
-      // Tốt nhất nên dùng Firebase Storage, nhưng để đơn giản tạm thời dùng cách này.
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setFormData({ ...formData, image: reader.result });
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-
-  // Xử lý Submit chung cho cả Thêm và Sửa
-  const handleSubmit = async (e, collectionName) => {
+  // 2. Thêm/Sửa item
+  const handleAddOrUpdate = async (e) => {
     e.preventDefault();
+    setLoading(true);
+
     try {
-      if (editingId) {
-        // Cập nhật
-        const docRef = doc(db, collectionName, editingId);
-        await updateDoc(docRef, formData);
+      if (activeTab === "members") {
+        // --- XỬ LÝ MEMBER ---
+        const dataToSave = {
+          name: formData.name,
+          role: formData.role,
+          image: formData.image || "",
+          specialty: formData.specialty || "Dancer",
+        };
 
-        // Cập nhật UI
-        const updateState =
-          collectionName === "members" ? setMembers : setEvents;
-        const currentData = collectionName === "members" ? members : events;
-        updateState(
-          currentData.map((item) =>
-            item.id === editingId ? { ...formData, id: editingId } : item
-          )
-        );
-      } else {
-        // Thêm mới
-        const docRef = await addDoc(collection(db, collectionName), formData);
+        if (editingId) {
+          await updateDoc(doc(db, "members", editingId), dataToSave);
+        } else {
+          dataToSave.createdAt = serverTimestamp();
+          await addDoc(collection(db, "members"), dataToSave);
+        }
+      } else if (activeTab === "gallery") {
+        // --- XỬ LÝ GALLERY ---
 
-        // Cập nhật UI
-        const updateState =
-          collectionName === "members" ? setMembers : setEvents;
-        const currentData = collectionName === "members" ? members : events;
-        updateState([...currentData, { ...formData, id: docRef.id }]);
+        // VALIDATION: Kiểm tra phải có ít nhất 1 ảnh
+        if (galleryImageUrls.length === 0) {
+          alert("⚠️ Vui lòng thêm ít nhất 1 ảnh cho album!");
+          setLoading(false);
+          return;
+        }
+
+        const dataToSave = {
+          title: formData.title,
+          date: formData.date,
+          images: galleryImageUrls, // ĐẢM BẢO là mảng
+          videoUrl: formData.videoUrl || "",
+          description: formData.description || "",
+          imageCount: galleryImageUrls.length,
+        };
+
+        if (editingId) {
+          // Sửa: KHÔNG thay đổi createdAt
+          await updateDoc(doc(db, "gallery", editingId), dataToSave);
+        } else {
+          // Thêm mới: THÊM createdAt
+          dataToSave.createdAt = serverTimestamp();
+          await addDoc(collection(db, "gallery"), dataToSave);
+        }
+
+        setGalleryImageUrls([]);
+        setNewImageUrl("");
       }
-      resetForm();
+
+      // Reset Form
+      setShowForm(false);
+      setEditingId(null);
+      setFormData({});
+      fetchData();
+
+      alert("✅ Lưu thành công!");
     } catch (error) {
-      alert("Có lỗi xảy ra: " + error.message);
+      console.error("Lỗi khi thêm/sửa:", error);
+      alert("❌ Có lỗi xảy ra: " + error.message);
+    } finally {
+      setLoading(false);
     }
   };
 
+  // 3. Xóa item
   const handleDelete = async (id, collectionName) => {
-    if (window.confirm("Bạn có chắc muốn xóa không?")) {
+    if (window.confirm("Bạn có chắc chắn muốn xóa mục này?")) {
+      setLoading(true);
       try {
         await deleteDoc(doc(db, collectionName, id));
-        if (collectionName === "members") {
-          setMembers(members.filter((m) => m.id !== id));
-        } else {
-          setEvents(events.filter((e) => e.id !== id));
-        }
+        fetchData();
+        alert("✅ Xóa thành công!");
       } catch (error) {
-        alert("Lỗi khi xóa: " + error.message);
+        console.error("Lỗi khi xóa:", error);
+        alert("❌ Có lỗi khi xóa: " + error.message);
+      } finally {
+        setLoading(false);
       }
     }
   };
 
-  // ... (Giữ nguyên các hàm editMember, editEvent, resetForm, handleLogout như cũ) ...
-  const editMember = (item) => {
-    setFormData(item);
+  // Mở Form Sửa
+  const startEdit = (item, tab) => {
     setEditingId(item.id);
-    setShowForm(true);
-  };
-  const editEvent = (item) => {
     setFormData(item);
-    setEditingId(item.id);
     setShowForm(true);
-  };
-  const resetForm = () => {
-    setFormData({});
-    setEditingId(null);
-    setShowForm(false);
-  };
-  const handleLogout = () => setShowLogoutModal(true);
-  const confirmLogout = () => {
-    localStorage.removeItem("milkyway_admin_session");
-    sessionStorage.removeItem("milkyway_admin_session");
-    setShowLogoutModal(false);
-    navigate("/admin/login", { replace: true });
+    setActiveTab(tab);
+
+    // Nếu là gallery, load images vào state
+    if (tab === "gallery") {
+      // ĐẢM BẢO images là mảng
+      const images = Array.isArray(item.images) ? item.images : [];
+      setGalleryImageUrls([...images]);
+    }
+    setNewImageUrl("");
   };
 
-  if (loading)
-    return (
-      <div style={{ textAlign: "center", marginTop: "50px" }}>
-        Đang tải dữ liệu...
-      </div>
-    );
+  // Thêm URL ảnh vào danh sách (Gallery)
+  const addImageUrl = () => {
+    const url = newImageUrl.trim();
+    if (!url) {
+      alert("⚠️ Vui lòng nhập link ảnh!");
+      return;
+    }
+
+    // Kiểm tra URL hợp lệ
+    try {
+      new URL(url);
+      setGalleryImageUrls([...galleryImageUrls, url]);
+      setNewImageUrl("");
+    } catch {
+      alert(
+        "⚠️ Link ảnh không hợp lệ! Vui lòng nhập URL đầy đủ (bắt đầu bằng http:// hoặc https://)"
+      );
+    }
+  };
+
+  // Xóa ảnh khỏi danh sách (Gallery)
+  const removeGalleryImage = (index) => {
+    const updated = galleryImageUrls.filter((_, i) => i !== index);
+    setGalleryImageUrls(updated);
+  };
+
+  const handleFormChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const cancelForm = () => {
+    setShowForm(false);
+    setEditingId(null);
+    setFormData({});
+    setGalleryImageUrls([]);
+    setNewImageUrl("");
+  };
+
+  // Đăng xuất với Firebase Authentication
+  const confirmLogout = async () => {
+    try {
+      // Đăng xuất khỏi Firebase
+      await signOut(auth);
+
+      // Xóa session
+      localStorage.removeItem("milkyway_admin_session");
+      sessionStorage.removeItem("milkyway_admin_session");
+
+      console.log("✅ Đăng xuất thành công");
+      navigate("/admin/login", { replace: true });
+    } catch (error) {
+      console.error("❌ Lỗi khi đăng xuất:", error);
+      alert("Có lỗi khi đăng xuất. Vui lòng thử lại.");
+    }
+  };
 
   return (
     <div className="admin-page">
-      {/* Container class đã sửa trong CSS */}
       <div className="admin-container">
-        {/* ... Header và Tabs giữ nguyên ... */}
+        {/* Header */}
         <div className="admin-header-wrapper">
-          <h1 className="admin-title">Quản lý Milkyway Dance</h1>
-          <button className="logout-btn" onClick={handleLogout}>
-            <FiLogOut /> Đăng xuất
+          <h1 className="admin-title">Quản Trị Viên</h1>
+          <button
+            className="logout-btn"
+            onClick={() => setShowLogoutModal(true)}
+          >
+            <FiLogOut /> Đăng Xuất
           </button>
         </div>
 
-        <div className="admin-tabs">
+        {/* Tab Navigation */}
+        <div className="tab-nav">
           <button
-            className={`tab ${activeTab === "members" ? "active" : ""}`}
-            onClick={() => {
-              setActiveTab("members");
-              resetForm();
-            }}
+            onClick={() => setActiveTab("members")}
+            className={activeTab === "members" ? "active" : ""}
           >
-            Thành viên
+            Thành Viên
           </button>
           <button
-            className={`tab ${activeTab === "events" ? "active" : ""}`}
-            onClick={() => {
-              setActiveTab("events");
-              resetForm();
-            }}
+            onClick={() => setActiveTab("gallery")}
+            className={activeTab === "gallery" ? "active" : ""}
           >
-            Sự kiện
+            Thư Viện
           </button>
         </div>
 
-        {!showForm && (
-          <button className="add-btn" onClick={() => setShowForm(true)}>
-            <FiPlus /> Thêm {activeTab === "members" ? "thành viên" : "sự kiện"}
+        {/* Add Button */}
+        <div className="admin-actions">
+          <button
+            className="add-btn"
+            onClick={() => {
+              setShowForm(true);
+              setEditingId(null);
+              setFormData({});
+              setGalleryImageUrls([]);
+              setNewImageUrl("");
+            }}
+          >
+            <FiPlus /> Thêm {activeTab === "members" ? "Thành Viên" : "Album"}
           </button>
-        )}
+        </div>
 
-        {/* Form Area */}
+        {/* Form Add/Edit */}
         {showForm && (
-          <div className="form-container">
-            <div className="form-header">
-              <h2>
-                {editingId ? "Chỉnh sửa" : "Thêm mới"}{" "}
-                {activeTab === "members" ? "thành viên" : "sự kiện"}
-              </h2>
-              <button className="close-btn" onClick={resetForm}>
-                <FiX />
-              </button>
-            </div>
+          <div className="admin-form">
+            <form onSubmit={handleAddOrUpdate}>
+              <h3>
+                {editingId ? "Sửa" : "Thêm"}{" "}
+                {activeTab === "members" ? "Thành Viên" : "Album"}
+              </h3>
 
-            {activeTab === "members" ? (
-              // Form Thành Viên (Giữ nguyên logic cũ nhưng gọi handleSubmit('members'))
-              <form
-                onSubmit={(e) => handleSubmit(e, "members")}
-                className="admin-form"
-              >
-                {/* ... Các input của Member giữ nguyên như code cũ ... */}
-                <div className="form-group">
-                  <label>Ảnh đại diện</label>
-                  <div className="image-upload">
-                    {formData.image && (
-                      <img
-                        src={formData.image}
-                        alt="Preview"
-                        className="image-preview"
-                      />
-                    )}
-                    <label className="upload-label">
-                      <FiUpload />
-                      <span>Chọn ảnh</span>
-                      <input
-                        type="file"
-                        accept="image/*"
-                        onChange={handleImageUpload}
-                        style={{ display: "none" }}
-                      />
-                    </label>
+              {/* Form Members */}
+              {activeTab === "members" && (
+                <>
+                  <div className="form-group">
+                    <label>Tên Thành Viên *</label>
+                    <input
+                      type="text"
+                      name="name"
+                      value={formData.name || ""}
+                      onChange={handleFormChange}
+                      required
+                    />
                   </div>
-                </div>
-                <div className="form-group">
-                  <label>Tên thành viên *</label>
-                  <input
-                    type="text"
-                    value={formData.name || ""}
-                    onChange={(e) =>
-                      setFormData({ ...formData, name: e.target.value })
-                    }
-                    required
-                  />
-                </div>
-                <div className="form-group">
-                  <label>Vai trò *</label>
-                  <input
-                    type="text"
-                    value={formData.role || ""}
-                    onChange={(e) =>
-                      setFormData({ ...formData, role: e.target.value })
-                    }
-                    required
-                  />
-                </div>
-                <div className="form-group">
-                  <label>Chuyên môn *</label>
-                  <input
-                    type="text"
-                    value={formData.specialty || ""}
-                    onChange={(e) =>
-                      setFormData({ ...formData, specialty: e.target.value })
-                    }
-                    required
-                  />
-                </div>
-                <button type="submit" className="submit-btn">
-                  <FiSave /> {editingId ? "Cập nhật" : "Thêm mới"}
-                </button>
-              </form>
-            ) : (
-              // Form Sự Kiện (THÊM CÁC TRƯỜNG MỚI)
-              <form
-                onSubmit={(e) => handleSubmit(e, "events")}
-                className="admin-form"
-              >
-                <div className="form-group">
-                  <label>Ảnh sự kiện (Thumbnail)</label>
-                  <div className="image-upload">
-                    {formData.image && (
-                      <img
-                        src={formData.image}
-                        alt="Preview"
-                        className="image-preview"
-                      />
-                    )}
-                    <label className="upload-label">
-                      <FiUpload />
-                      <span>Chọn ảnh</span>
-                      <input
-                        type="file"
-                        accept="image/*"
-                        onChange={handleImageUpload}
-                        style={{ display: "none" }}
-                      />
-                    </label>
+                  <div className="form-group">
+                    <label>Vai Trò *</label>
+                    <input
+                      type="text"
+                      name="role"
+                      value={formData.role || ""}
+                      onChange={handleFormChange}
+                      required
+                    />
                   </div>
-                </div>
+                  <div className="form-group">
+                    <label>Chuyên Môn</label>
+                    <input
+                      type="text"
+                      name="specialty"
+                      value={formData.specialty || ""}
+                      onChange={handleFormChange}
+                      placeholder="Vd: Dancer, Choreographer..."
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label>Link Ảnh Thành Viên *</label>
+                    <input
+                      type="url"
+                      name="image"
+                      value={formData.image || ""}
+                      onChange={handleFormChange}
+                      placeholder="https://example.com/image.jpg"
+                      required
+                    />
+                    <span className="form-hint">
+                      💡 Dán link ảnh từ Facebook, Imgur, hoặc nguồn khác
+                    </span>
+                    {formData.image && (
+                      <div className="image-preview">
+                        <img src={formData.image} alt="Preview" />
+                      </div>
+                    )}
+                  </div>
+                </>
+              )}
 
-                <div className="form-group">
-                  <label>Tên sự kiện *</label>
-                  <input
-                    type="text"
-                    value={formData.title || ""}
-                    onChange={(e) =>
-                      setFormData({ ...formData, title: e.target.value })
-                    }
-                    required
-                  />
-                </div>
+              {/* Form Gallery */}
+              {activeTab === "gallery" && (
+                <>
+                  <div className="form-group">
+                    <label>Tiêu Đề Album *</label>
+                    <input
+                      type="text"
+                      name="title"
+                      value={formData.title || ""}
+                      onChange={handleFormChange}
+                      required
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label>Ngày Sự Kiện *</label>
+                    <input
+                      type="text"
+                      name="date"
+                      value={formData.date || ""}
+                      onChange={handleFormChange}
+                      placeholder="Vd: 3/12/2025"
+                      required
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label>Mô Tả (Tùy chọn)</label>
+                    <textarea
+                      name="description"
+                      value={formData.description || ""}
+                      onChange={handleFormChange}
+                      placeholder="Mô tả về sự kiện..."
+                    />
+                  </div>
 
-                <div className="form-group">
-                  <label>Ngày *</label>
-                  <input
-                    type="text"
-                    value={formData.date || ""}
-                    onChange={(e) =>
-                      setFormData({ ...formData, date: e.target.value })
-                    }
-                    placeholder="VD: 15/12/2024"
-                    required
-                  />
-                </div>
+                  {/* Thêm ảnh bằng link */}
+                  <div className="form-group">
+                    <label>
+                      <FiImage /> Thêm Ảnh (Dán Link) *
+                    </label>
+                    <div className="add-image-input">
+                      <input
+                        type="url"
+                        value={newImageUrl}
+                        onChange={(e) => setNewImageUrl(e.target.value)}
+                        placeholder="https://example.com/image.jpg"
+                        onKeyPress={(e) => {
+                          if (e.key === "Enter") {
+                            e.preventDefault();
+                            addImageUrl();
+                          }
+                        }}
+                      />
+                      <button
+                        type="button"
+                        onClick={addImageUrl}
+                        className="add-url-btn"
+                      >
+                        <FiPlus /> Thêm
+                      </button>
+                    </div>
+                    <span className="form-hint">
+                      💡 Dán link ảnh và nhấn "Thêm". Có thể thêm nhiều ảnh.{" "}
+                      <strong>Phải có ít nhất 1 ảnh!</strong>
+                    </span>
+                  </div>
 
-                <div className="form-group">
-                  <label>Địa điểm *</label>
-                  <input
-                    type="text"
-                    value={formData.location || ""}
-                    onChange={(e) =>
-                      setFormData({ ...formData, location: e.target.value })
-                    }
-                    required
-                  />
-                </div>
+                  {/* Hiển thị danh sách ảnh đã thêm */}
+                  {galleryImageUrls.length > 0 && (
+                    <div className="existing-images-preview">
+                      <p>✅ Danh sách ảnh ({galleryImageUrls.length}):</p>
+                      <div className="image-thumbs">
+                        {galleryImageUrls.map((imgUrl, index) => (
+                          <div key={index} className="thumb-item">
+                            <img src={imgUrl} alt={`Ảnh ${index + 1}`} />
+                            <button
+                              type="button"
+                              onClick={() => removeGalleryImage(index)}
+                              className="remove-thumb-btn"
+                            >
+                              <FiX />
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
 
-                {/* TRƯỜNG MỚI: Video Link */}
-                <div className="form-group">
-                  <label>
-                    <FiVideo /> Link Video (Youtube Embed/Link) (Tùy chọn)
-                  </label>
-                  <input
-                    type="text"
-                    value={formData.videoUrl || ""}
-                    onChange={(e) =>
-                      setFormData({ ...formData, videoUrl: e.target.value })
-                    }
-                    placeholder="https://www.youtube.com/..."
-                  />
-                </div>
+                  <div className="form-group">
+                    <label>Link Video (YouTube/Facebook - Tùy chọn)</label>
+                    <input
+                      type="url"
+                      name="videoUrl"
+                      value={formData.videoUrl || ""}
+                      onChange={handleFormChange}
+                      placeholder="https://www.youtube.com/watch?v=..."
+                    />
+                    <span className="form-hint">
+                      💡 Dán link video từ YouTube hoặc Facebook
+                    </span>
+                  </div>
+                </>
+              )}
 
-                {/* TRƯỜNG MỚI: Mô tả chi tiết */}
-                <div className="form-group">
-                  <label>
-                    <FiAlignLeft /> Mô tả chi tiết (Tùy chọn)
-                  </label>
-                  <textarea
-                    rows="5"
-                    value={formData.description || ""}
-                    onChange={(e) =>
-                      setFormData({ ...formData, description: e.target.value })
-                    }
-                    placeholder="Nhập nội dung chi tiết sự kiện..."
-                  />
-                </div>
-
-                <button type="submit" className="submit-btn">
-                  <FiSave /> {editingId ? "Cập nhật" : "Thêm mới"}
+              <div className="form-actions">
+                <button type="submit" className="save-btn" disabled={loading}>
+                  <FiSave /> {editingId ? "Lưu Thay Đổi" : "Thêm Mới"}
                 </button>
-              </form>
-            )}
+                <button
+                  type="button"
+                  onClick={cancelForm}
+                  className="cancel-btn"
+                >
+                  <FiX /> Hủy
+                </button>
+              </div>
+            </form>
           </div>
         )}
 
-        {/* List render logic cập nhật gọi hàm handleDelete mới */}
-        <div className="list-container">
-          {activeTab === "members" ? (
-            <div className="members-list">
-              {members.map((member) => (
-                <div key={member.id} className="list-item">
-                  <img
-                    src={member.image || "/placeholder.jpg"}
-                    alt={member.name}
-                  />
-                  <div className="item-info">
-                    <h3>{member.name}</h3>
-                    <p className="role">{member.role}</p>
+        {/* List Content */}
+        <div className="content-list-wrapper">
+          {loading && <div className="loading">Đang tải dữ liệu...</div>}
+
+          {/* Members List */}
+          {!loading && activeTab === "members" && (
+            <div className="data-list">
+              {members.length === 0 ? (
+                <p className="empty-message">Chưa có thành viên nào</p>
+              ) : (
+                members.map((member) => (
+                  <div key={member.id} className="list-item">
+                    <img
+                      src={member.image || "/placeholder.jpg"}
+                      alt={member.name}
+                    />
+                    <div className="item-info">
+                      <h3>{member.name}</h3>
+                      <p className="sub-info">{member.role}</p>
+                    </div>
+                    <div className="item-actions">
+                      <button
+                        onClick={() => startEdit(member, "members")}
+                        className="edit-btn"
+                      >
+                        <FiEdit2 />
+                      </button>
+                      <button
+                        onClick={() => handleDelete(member.id, "members")}
+                        className="delete-btn"
+                      >
+                        <FiTrash2 />
+                      </button>
+                    </div>
                   </div>
-                  <div className="item-actions">
-                    <button
-                      onClick={() => editMember(member)}
-                      className="edit-btn"
-                    >
-                      <FiEdit2 />
-                    </button>
-                    <button
-                      onClick={() => handleDelete(member.id, "members")}
-                      className="delete-btn"
-                    >
-                      <FiTrash2 />
-                    </button>
-                  </div>
-                </div>
-              ))}
+                ))
+              )}
             </div>
-          ) : (
-            <div className="events-list">
-              {events.map((event) => (
-                <div key={event.id} className="list-item">
-                  <img
-                    src={event.image || "/placeholder.jpg"}
-                    alt={event.title}
-                  />
-                  <div className="item-info">
-                    <h3>{event.title}</h3>
-                    <p className="date">{event.date}</p>
+          )}
+
+          {/* Gallery List */}
+          {!loading && activeTab === "gallery" && (
+            <div className="data-list">
+              {gallery.length === 0 ? (
+                <p className="empty-message">Chưa có Album nào</p>
+              ) : (
+                gallery.map((album) => (
+                  <div key={album.id} className="list-item">
+                    <img
+                      src={
+                        Array.isArray(album.images) && album.images.length > 0
+                          ? album.images[0]
+                          : "/placeholder.jpg"
+                      }
+                      alt={album.title}
+                    />
+                    <div className="item-info">
+                      <h3>{album.title}</h3>
+                      <p className="sub-info">{album.date}</p>
+                      <p className="sub-info">
+                        {Array.isArray(album.images) ? album.images.length : 0}{" "}
+                        ảnh | {album.videoUrl ? "Có Video" : "Không Video"}
+                      </p>
+                    </div>
+                    <div className="item-actions">
+                      <button
+                        onClick={() => startEdit(album, "gallery")}
+                        className="edit-btn"
+                      >
+                        <FiEdit2 />
+                      </button>
+                      <button
+                        onClick={() => handleDelete(album.id, "gallery")}
+                        className="delete-btn"
+                      >
+                        <FiTrash2 />
+                      </button>
+                    </div>
                   </div>
-                  <div className="item-actions">
-                    <button
-                      onClick={() => editEvent(event)}
-                      className="edit-btn"
-                    >
-                      <FiEdit2 />
-                    </button>
-                    <button
-                      onClick={() => handleDelete(event.id, "events")}
-                      className="delete-btn"
-                    >
-                      <FiTrash2 />
-                    </button>
-                  </div>
-                </div>
-              ))}
+                ))
+              )}
             </div>
           )}
         </div>

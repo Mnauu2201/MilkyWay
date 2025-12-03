@@ -1,5 +1,6 @@
 // eslint-disable-next-line no-unused-vars
 import { motion } from "framer-motion";
+import { useState, useEffect } from "react";
 import {
   FiPlay,
   FiUsers,
@@ -9,8 +10,73 @@ import {
 } from "react-icons/fi";
 import "./Home.css";
 import { Link } from "react-router-dom";
+import { collection, getDocs, query, orderBy } from "firebase/firestore";
+import { db } from "../firebase/config";
 
 const Home = () => {
+  // State cho events từ Firebase
+  const [events, setEvents] = useState([]);
+  const [loadingEvents, setLoadingEvents] = useState(true);
+
+  // Lấy 2 events mới nhất từ Firebase
+  useEffect(() => {
+    const fetchRecentEvents = async () => {
+      try {
+        console.log("🔍 Bắt đầu lấy events từ Firebase...");
+
+        // Lấy tất cả documents từ gallery giống Gallery.jsx
+        const galleryQuery = query(
+          collection(db, "gallery"),
+          orderBy("createdAt", "desc")
+        );
+
+        const querySnapshot = await getDocs(galleryQuery);
+        console.log("📊 Số lượng documents:", querySnapshot.size);
+
+        const eventsData = [];
+        querySnapshot.forEach((doc) => {
+          const data = doc.data();
+          eventsData.push({
+            id: doc.id,
+            ...data,
+            images: Array.isArray(data.images) ? data.images : [],
+          });
+        });
+
+        console.log("📦 All events data:", eventsData);
+
+        // Lấy 2 cái đầu tiên (đã được sort rồi)
+        const recentEvents = eventsData.slice(0, 2);
+
+        console.log("✅ Recent events (top 2):", recentEvents);
+        setEvents(recentEvents);
+      } catch (error) {
+        console.error("❌ Lỗi khi tải sự kiện:", error);
+        // Nếu lỗi sort, thử lấy không sort
+        try {
+          const querySnapshot = await getDocs(collection(db, "gallery"));
+          const eventsData = [];
+          querySnapshot.forEach((doc) => {
+            const data = doc.data();
+            eventsData.push({
+              id: doc.id,
+              ...data,
+              images: Array.isArray(data.images) ? data.images : [],
+            });
+          });
+          setEvents(eventsData.slice(0, 2));
+        } catch (fallbackError) {
+          console.error("❌ Fallback error:", fallbackError);
+          setEvents([]);
+        }
+      } finally {
+        setLoadingEvents(false);
+      }
+    };
+
+    fetchRecentEvents();
+  }, []);
+
   // Stats data
   const stats = [
     { icon: FiUsers, number: "50+", label: "Thành viên" },
@@ -23,13 +89,13 @@ const Home = () => {
   const members = [
     {
       name: "ChouChou",
-      role: "Leader & Choreographer",
+      role: "Main Dancer",
       image: "/Mem1.jpg",
       specialty: "Hip Hop, Breaking",
     },
     {
       name: "Mai Trang",
-      role: "Co-leader",
+      role: "Main Dancer",
       image: "/Mem2.jpg",
       specialty: "Contemporary, Jazz",
     },
@@ -41,26 +107,18 @@ const Home = () => {
     },
   ];
 
-  // Recent events
-  const events = [
-    {
-      title: "Dance Battle 2024",
-      date: "15/12/2024",
-      location: "Hà Nội",
-      image: "/hinh-nen-may-tinh-4k-1.jpg",
-    },
-    {
-      title: "Workshop với DJ Khôi",
-      date: "20/11/2024",
-      location: "Hà Nội",
-      image: "/hinh-nen-may-tinh-4k-1.jpg",
-    },
-  ];
-
   return (
     <div className="home">
       {/* Hero Section */}
       <section className="hero" id="home">
+        {/* ========== VIDEO BACKGROUND ========== */}
+        <video autoPlay loop muted playsInline className="hero-video-bg">
+          {/* 👇 THAY ĐỔI LINK VIDEO CỦA BẠN TẠI ĐÂY */}
+          <source src="/GioiThieuVuDoan.mp4" type="video/mp4" />
+          Trình duyệt của bạn không hỗ trợ video.
+        </video>
+        {/* ====================================== */}
+
         <div className="hero-overlay"></div>
         <div className="hero-content">
           <motion.div
@@ -91,22 +149,16 @@ const Home = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.6, duration: 0.8 }}
             >
-              <motion.button
-                className="btn btn-primary"
-                whileHover={{ scale: 1.05, y: -2 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                Khám phá ngay
-                <FiArrowRight />
-              </motion.button>
-              <motion.button
-                className="btn btn-secondary"
-                whileHover={{ scale: 1.05, y: -2 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                <FiPlay />
-                Xem video
-              </motion.button>
+              <Link to="/gallery">
+                <motion.button
+                  className="btn btn-primary"
+                  whileHover={{ scale: 1.05, y: -2 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  Khám phá ngay
+                  <FiArrowRight />
+                </motion.button>
+              </Link>
             </motion.div>
           </motion.div>
 
@@ -197,7 +249,7 @@ const Home = () => {
               transition={{ duration: 0.6 }}
             >
               <div className="image-wrapper">
-                <img src="/hinh-nen-may-tinh-4k-1.jpg" alt="Milkyway Dance" />
+                <img src="/VuDoan2.jpg" alt="Milkyway Dance" />
                 <div className="image-overlay"></div>
               </div>
             </motion.div>
@@ -219,14 +271,16 @@ const Home = () => {
                 tôi đã tham gia và giành được nhiều giải thưởng trong các cuộc
                 thi nhảy trong nước và quốc tế.
               </p>
-              <motion.button
-                className="btn btn-primary"
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                Tìm hiểu thêm
-                <FiArrowRight />
-              </motion.button>
+              <Link to="/about">
+                <motion.button
+                  className="btn btn-primary"
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  Tìm hiểu thêm
+                  <FiArrowRight />
+                </motion.button>
+              </Link>
             </motion.div>
           </div>
         </div>
@@ -275,7 +329,7 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Events Section */}
+      {/* Events Section - Hiển thị 2 sự kiện mới nhất từ Firebase */}
       <section className="events-section">
         <div className="container">
           <motion.div
@@ -291,31 +345,63 @@ const Home = () => {
             </p>
           </motion.div>
 
-          <div className="events-grid">
-            {events.map((event, index) => (
-              <motion.div
-                key={event.id}
-                className="event-card"
-                initial={{ opacity: 0, scale: 0.9 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.2, duration: 0.6 }}
-                whileHover={{ y: -5 }}
-              >
-                <div className="event-image">
-                  <img src={event.image} alt={event.title} />
-                  <div className="event-date">{event.date}</div>
-                </div>
-                <div className="event-content">
-                  <h3 className="event-title">{event.title}</h3>
-                  <p className="event-location">{event.location}</p>
-                  <Link to={`/events/${event.id}`} className="event-link">
-                    Xem chi tiết <FiArrowRight />
-                  </Link>
-                </div>
-              </motion.div>
-            ))}
-          </div>
+          {loadingEvents ? (
+            <div className="loading-events">Đang tải sự kiện...</div>
+          ) : events.length > 0 ? (
+            <div className="events-grid">
+              {events.map((event, index) => {
+                // Lấy ảnh đầu tiên từ mảng images hoặc dùng ảnh mặc định
+                const eventImage =
+                  event.images && event.images.length > 0
+                    ? event.images[0]
+                    : "/hinh-nen-may-tinh-4k-1.jpg";
+
+                // Xử lý date - chuyển thành string nếu là object
+                let displayDate = "N/A";
+                if (event.date) {
+                  if (typeof event.date === "string") {
+                    displayDate = event.date;
+                  } else if (event.date.seconds) {
+                    // Nếu là Firestore Timestamp
+                    const dateObj = new Date(event.date.seconds * 1000);
+                    displayDate = dateObj.toLocaleDateString("vi-VN");
+                  }
+                }
+
+                return (
+                  <motion.div
+                    key={event.id}
+                    className="event-card"
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    whileInView={{ opacity: 1, scale: 1 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: index * 0.2, duration: 0.6 }}
+                    whileHover={{ y: -5 }}
+                  >
+                    <div className="event-image">
+                      <img src={eventImage} alt={event.title || "Event"} />
+                      <div className="event-date">{displayDate}</div>
+                    </div>
+                    <div className="event-content">
+                      <h3 className="event-title">
+                        {event.title || "Sự kiện"}
+                      </h3>
+                      <p className="event-location">
+                        {event.location || "Hà Nội"}
+                      </p>
+                      <Link to={`/gallery/${event.id}`} className="event-link">
+                        Xem chi tiết <FiArrowRight />
+                      </Link>
+                    </div>
+                  </motion.div>
+                );
+              })}
+            </div>
+          ) : (
+            <div className="no-events">
+              <p>Chưa có sự kiện nào được đăng tải.</p>
+            </div>
+          )}
         </div>
       </section>
 
@@ -333,14 +419,16 @@ const Home = () => {
             Liên hệ với chúng tôi để tìm hiểu thêm về các hoạt động và sự kiện
             sắp tới
           </p>
-          <motion.button
-            className="btn btn-light"
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-          >
-            Liên hệ ngay
-            <FiArrowRight />
-          </motion.button>
+          <Link to="/contact">
+            <motion.button
+              className="btn btn-light"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              Liên hệ ngay
+              <FiArrowRight />
+            </motion.button>
+          </Link>
         </motion.div>
       </section>
     </div>
