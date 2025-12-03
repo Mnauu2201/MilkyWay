@@ -11,7 +11,7 @@ import {
 import "./Home.css";
 import { Link } from "react-router-dom";
 import { collection, getDocs, query, orderBy } from "firebase/firestore";
-import { db } from "../firebase/config.js";
+import { db } from "@/firebase/config.js";
 
 const Home = () => {
   // State cho events từ Firebase
