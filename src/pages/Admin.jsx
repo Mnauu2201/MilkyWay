@@ -120,8 +120,8 @@ const Admin = () => {
         // --- XỬ LÝ GALLERY ---
 
         // VALIDATION: Kiểm tra phải có ít nhất 1 ảnh
-        if (galleryImageUrls.length === 0) {
-          alert("⚠️ Vui lòng thêm ít nhất 1 ảnh cho album!");
+        if (galleryImageUrls.length === 0 && !formData.videoUrl) {
+          alert("⚠️ Vui lòng thêm ít nhất 1 ảnh HOẶC 1 link video cho album!");
           setLoading(false);
           return;
         }

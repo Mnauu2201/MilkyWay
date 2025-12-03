@@ -326,3 +326,28 @@
         font-size: 1rem;
     }
 }
+
+
+.gallery-video-section {
+    margin-top: 30px;
+    margin-bottom: 30px;
+}
+
+.player-wrapper {
+    position: relative;
+    /* Dòng này tạo tỷ lệ 16:9 */
+    padding-top: 56.25%;
+    width: 100%;
+    margin: 20px 0;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+/* ÁP DỤNG cho cả ReactPlayer và IFRAME bên trong player-wrapper */
+.react-player,
+.player-wrapper iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+}
