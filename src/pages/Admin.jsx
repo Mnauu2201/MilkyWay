@@ -1,7 +1,7 @@
 // src/pages/Admin.jsx (Fixed - Firebase Authentication)
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { db, auth } from "../firebase/config";
+import { db, auth } from "@/firebase/config.js";
 import { signOut } from "firebase/auth";
 import {
   collection,
