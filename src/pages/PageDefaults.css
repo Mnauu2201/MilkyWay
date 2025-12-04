@@ -15,7 +15,7 @@
 
 .page-header h1 {
     font-size: 2.5rem;
-    color: #333;
+    color: #ffffff;
     margin: 0;
 }
 
@@ -574,4 +574,76 @@
         height: 150px;
         margin: 0 auto 1rem auto;
     }
+}
+
+
+.mission-cards ul {
+    list-style: none;
+    /* Loại bỏ dấu gạch đầu dòng mặc định */
+    padding-left: 0;
+    /* Loại bỏ padding mặc định */
+    margin-top: 1rem;
+}
+
+/* Style cho từng mục li */
+.mission-cards li {
+    position: relative;
+    /* Thiết lập cho việc đặt icon */
+    padding-left: 25px;
+    /* Tạo khoảng trống cho icon tùy chỉnh */
+    margin-bottom: 12px;
+    /* Tăng khoảng cách giữa các mục */
+    font-size: 1.05rem;
+    line-height: 1.5;
+}
+
+/* Tạo icon/dấu gạch đầu dòng tùy chỉnh (Sử dụng CSS pseudo-element) */
+.mission-cards li::before {
+    content: " ";
+    /* Nội dung rỗng */
+    position: absolute;
+    left: 0;
+    top: 5px;
+    /* Căn chỉnh theo chiều dọc */
+    width: 10px;
+    height: 10px;
+    background-color: #FF69B4;
+    /* Màu chủ đạo của MilkyWay */
+    border-radius: 50%;
+    /* Hình tròn */
+    box-shadow: 0 0 5px rgba(255, 105, 180, 0.5);
+    /* Đổ bóng nhẹ */
+}
+
+/* Cải thiện tiêu đề thẻ (nếu cần) */
+.mission-cards .card h3 {
+    border-bottom: 2px solid #FFB6C1;
+    /* Đường gạch dưới nhẹ */
+    padding-bottom: 5px;
+    margin-bottom: 15px;
+    color: #FF69B4;
+    /* Màu chủ đạo cho tiêu đề phụ */
+    font-size: 1.4rem;
+}
+
+/* Style đặc biệt cho các giá trị cốt lõi để nổi bật hơn */
+.mission-cards .card:last-child li {
+    font-weight: 500;
+    color: #333;
+}
+
+/* Thay dấu tròn bằng dấu ngôi sao cho phần Giá Trị */
+.mission-cards .card:last-child li::before {
+    content: "★";
+    /* Dùng ký tự Unicode hoặc biểu tượng */
+    font-size: 14px;
+    /* Kích thước */
+    top: 0;
+    left: 0;
+    width: auto;
+    height: auto;
+    background: none;
+    color: #FF69B4;
+    /* Màu hồng chủ đạo */
+    box-shadow: none;
 }
