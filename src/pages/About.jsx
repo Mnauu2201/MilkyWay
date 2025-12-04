@@ -17,7 +17,7 @@ const About = () => {
     <div className="page-container about-page">
       {/* Page Header (Giữ nguyên style hồng từ PageDefaults.css) */}
       <div className="page-header">
-        <h1>Về Milkyway Dance Crew</h1>
+        <h1>Về Milkyway</h1>
         <p>Hành trình đam mê, nhiệt huyết và những bước nhảy vô tận</p>
       </div>
 
@@ -31,7 +31,7 @@ const About = () => {
               alt="Người sáng lập"
               className="founder-avatar"
             />
-            <h2 className="crew-name">MILKYWAY</h2>
+            <h2 className="crew-name">Nguyễn Ớt - Founder MILKYWAY</h2>
             <p className="crew-slogan">
               MilkyWay được thành lập với đam mê cháy bỏng về nghệ thuật nhảy
               múa. Chúng tôi là một tập thể nhiệt huyết, không ngừng tìm kiếm sự
