@@ -1,194 +1,145 @@
-/* src/pages/GalleryDetail.css - Fixed Layout */
+/* GalleryDetail.css */
 
-/* Container */
-.gallery-detail-page {
-    min-height: 100vh;
-    background: linear-gradient(135deg, #FFF5F7 0%, #FFE5EC 100%);
-    padding: 140px 2rem 4rem;
-    /* Tăng padding-top để tránh header che button */
-}
-
-.gallery-detail-page .container {
+.gallery-detail-container {
     max-width: 1200px;
     margin: 0 auto;
+    padding: 2rem;
+    min-height: 100vh;
 }
 
-/* Back Button - Fixed position để không bị che */
 .back-btn {
-    display: inline-flex;
+    display: flex;
     align-items: center;
-    gap: 8px;
-    padding: 12px 24px;
-    background: white;
-    color: #FF69B4;
-    border: 2px solid #FF69B4;
-    border-radius: 12px;
-    font-weight: 600;
-    font-size: 1rem;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    background: #ff69b4;
+    color: white;
+    border: none;
+    border-radius: 25px;
     cursor: pointer;
+    font-size: 1rem;
+    font-weight: 500;
     transition: all 0.3s ease;
     margin-bottom: 2rem;
-    box-shadow: 0 4px 12px rgba(255, 105, 180, 0.15);
 }
 
 .back-btn:hover {
-    background: #FF69B4;
-    color: white;
+    background: #ff1493;
     transform: translateX(-5px);
-    box-shadow: 0 6px 20px rgba(255, 105, 180, 0.3);
 }
 
-/* Detail Header */
-.detail-header {
+.album-content {
     background: white;
-    padding: 2.5rem;
     border-radius: 20px;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+    padding: 2rem;
+    box-shadow: 0 4px 20px rgba(255, 105, 180, 0.1);
+}
+
+.detail-header {
     margin-bottom: 3rem;
-    border: 1px solid rgba(255, 105, 180, 0.1);
+    text-align: center;
 }
 
 .detail-header h1 {
+    color: #ff69b4;
     font-size: 2.5rem;
+    margin-bottom: 1rem;
     font-weight: 700;
-    color: #333;
-    margin: 0 0 1.5rem 0;
-    background: linear-gradient(135deg, #FFB6C1 0%, #FF69B4 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    line-height: 1.3;
 }
 
 .meta-info {
     display: flex;
+    justify-content: center;
     gap: 2rem;
     flex-wrap: wrap;
-    align-items: center;
+    margin-bottom: 1.5rem;
 }
 
 .meta-item {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 0.5rem;
     color: #666;
-    font-weight: 500;
-    font-size: 1.05rem;
-    padding: 8px 16px;
-    background: #FFF5F7;
-    border-radius: 8px;
+    font-size: 0.95rem;
 }
 
 .meta-item svg {
-    color: #FF69B4;
-    font-size: 1.2rem;
+    color: #ff69b4;
 }
 
 .album-description {
-    margin-top: 1.5rem;
-    padding-top: 1.5rem;
-    border-top: 2px solid #FFE5EC;
+    max-width: 800px;
+    margin: 0 auto;
     color: #555;
-    line-height: 1.8;
-    font-size: 1.05rem;
+    line-height: 1.6;
+    font-size: 1rem;
 }
 
-/* Sections */
-.gallery-video-section,
-.gallery-images-section {
-    background: white;
-    padding: 2.5rem;
-    border-radius: 20px;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+/* VIDEO SECTION */
+.gallery-video-section {
     margin-bottom: 3rem;
-    border: 1px solid rgba(255, 105, 180, 0.1);
 }
 
-.gallery-video-section h2,
-.gallery-images-section h2 {
-    font-size: 1.8rem;
+.gallery-video-section h2 {
     color: #333;
-    margin: 0 0 2rem 0;
-    padding-left: 20px;
-    border-left: 5px solid #FF69B4;
-    font-weight: 700;
-    display: flex;
-    align-items: center;
-    gap: 10px;
+    font-size: 1.8rem;
+    margin-bottom: 1.5rem;
+    text-align: center;
 }
 
-/* Video Container */
-.video-container {
+.player-wrapper {
     position: relative;
+    padding-top: 56.25%;
+    /* 16:9 Aspect Ratio */
     width: 100%;
-    padding-bottom: 56.25%;
-    height: 0;
-    overflow: hidden;
+    max-width: 900px;
+    margin: 0 auto;
     border-radius: 15px;
-    background: #000;
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
 }
 
-.video-container iframe {
+.player-wrapper iframe,
+.player-wrapper .react-player {
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    border: none;
 }
 
-.video-link-fallback {
-    padding: 3rem;
+/* IMAGES SECTION */
+.gallery-images-section {
+    margin-top: 3rem;
+}
+
+.gallery-images-section h2 {
+    color: #333;
+    font-size: 1.8rem;
+    margin-bottom: 2rem;
     text-align: center;
-    background: linear-gradient(135deg, #FFF5F7 0%, #FFE5EC 100%);
-    border-radius: 15px;
-    border: 2px dashed #FFB6C1;
 }
 
-.video-link-fallback a {
-    color: #FF69B4;
-    font-size: 1.3rem;
-    font-weight: 600;
-    text-decoration: none;
-    transition: all 0.3s ease;
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    padding: 12px 24px;
-    background: white;
-    border-radius: 10px;
-    box-shadow: 0 4px 12px rgba(255, 105, 180, 0.2);
-}
-
-.video-link-fallback a:hover {
-    color: white;
-    background: #FF69B4;
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(255, 105, 180, 0.4);
-}
-
-/* Images Grid */
 .images-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 25px;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.5rem;
+    margin-top: 2rem;
 }
 
 .image-item {
     position: relative;
-    overflow: hidden;
     border-radius: 15px;
-    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
-    transition: all 0.3s ease;
-    cursor: pointer;
-    aspect-ratio: 1;
-    background: linear-gradient(135deg, #f5f5f5 0%, #e0e0e0 100%);
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    background: #f8f8f8;
+    aspect-ratio: 4/3;
 }
 
 .image-item:hover {
-    transform: translateY(-8px);
-    box-shadow: 0 12px 35px rgba(255, 105, 180, 0.25);
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(255, 105, 180, 0.3);
 }
 
 .image-item img {
@@ -196,68 +147,48 @@
     height: 100%;
     object-fit: cover;
     display: block;
-    transition: transform 0.4s ease;
+    transition: transform 0.3s ease;
 }
 
 .image-item:hover img {
-    transform: scale(1.1);
+    transform: scale(1.05);
 }
 
-/* Loading & Error Messages */
-.loading,
-.error {
+/* NO IMAGES MESSAGE */
+.no-images {
     text-align: center;
     padding: 4rem 2rem;
-    font-size: 1.3rem;
-    font-weight: 600;
-}
-
-.loading {
-    color: #FF69B4;
-}
-
-.error {
-    color: #F44336;
-    background: #FFE5E5;
-    border-radius: 15px;
-    padding: 3rem;
-    margin: 2rem 0;
-}
-
-.empty-message {
-    text-align: center;
     color: #999;
-    font-size: 1.2rem;
-    padding: 4rem 2rem;
-    background: linear-gradient(135deg, #FFF5F7 0%, #FFE5EC 100%);
-    border-radius: 15px;
-    border: 2px dashed #FFB6C1;
 }
 
-/* Responsive */
-@media (max-width: 1024px) {
-    .images-grid {
-        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-        gap: 20px;
-    }
-
-    .detail-header h1 {
-        font-size: 2.2rem;
-    }
-
-    .gallery-video-section,
-    .gallery-images-section {
-        padding: 2rem;
-    }
+.no-images svg {
+    color: #ddd;
+    margin-bottom: 1rem;
 }
 
+.no-images p {
+    font-size: 1.1rem;
+}
+
+/* LOADING & NOT FOUND */
+.loading,
+.not-found {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 60vh;
+    font-size: 1.5rem;
+    color: #666;
+}
+
+/* RESPONSIVE */
 @media (max-width: 768px) {
-    .gallery-detail-page {
-        padding: 120px 1rem 3rem;
+    .gallery-detail-container {
+        padding: 1rem;
     }
 
-    .detail-header {
-        padding: 2rem 1.5rem;
+    .album-content {
+        padding: 1.5rem;
     }
 
     .detail-header h1 {
@@ -268,36 +199,20 @@
         gap: 1rem;
     }
 
-    .meta-item {
-        font-size: 0.95rem;
-        padding: 6px 12px;
+    .images-grid {
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 1rem;
     }
 
     .gallery-video-section h2,
     .gallery-images-section h2 {
         font-size: 1.5rem;
-        padding-left: 15px;
-    }
-
-    .gallery-video-section,
-    .gallery-images-section {
-        padding: 1.5rem;
-    }
-
-    .images-grid {
-        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-        gap: 15px;
-    }
-
-    .back-btn {
-        padding: 10px 18px;
-        font-size: 0.95rem;
     }
 }
 
 @media (max-width: 480px) {
-    .gallery-detail-page {
-        padding: 110px 1rem 2rem;
+    .images-grid {
+        grid-template-columns: 1fr;
     }
 
     .detail-header h1 {
@@ -306,48 +221,6 @@
 
     .meta-info {
         flex-direction: column;
-        align-items: flex-start;
-        gap: 0.8rem;
+        gap: 0.5rem;
     }
-
-    .gallery-video-section h2,
-    .gallery-images-section h2 {
-        font-size: 1.3rem;
-        padding-left: 12px;
-        border-left-width: 4px;
-    }
-
-    .images-grid {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 10px;
-    }
-
-    .album-description {
-        font-size: 1rem;
-    }
-}
-
-
-.gallery-video-section {
-    margin-top: 30px;
-    margin-bottom: 30px;
-}
-
-.player-wrapper {
-    position: relative;
-    /* Dòng này tạo tỷ lệ 16:9 */
-    padding-top: 56.25%;
-    width: 100%;
-    margin: 20px 0;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-    border-radius: 8px;
-    overflow: hidden;
-}
-
-/* ÁP DỤNG cho cả ReactPlayer và IFRAME bên trong player-wrapper */
-.react-player,
-.player-wrapper iframe {
-    position: absolute;
-    top: 0;
-    left: 0;
 }
