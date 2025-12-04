@@ -463,3 +463,115 @@
         font-size: 1rem;
     }
 }
+
+.about-page .intro-box {
+    text-align: center;
+    padding: 2.5rem;
+    margin-bottom: 3rem;
+    /* Màu nền hồng nhạt, nổi bật hơn màu nền chung */
+    background: #FFFAFC;
+    color: #333;
+    border-radius: 15px;
+    box-shadow: 0 5px 20px rgba(255, 105, 180, 0.1);
+    border: 1px solid #FFB6C1;
+    /* Viền hồng nhẹ */
+}
+
+.about-page .founder-avatar {
+    /* KÍCH THƯỚC VÀ CĂN GIỮA ĐÃ SỬA */
+    display: block;
+    /* Bắt buộc là khối để căn giữa bằng margin */
+    margin: 0 auto 2rem auto;
+    /* Căn giữa (auto) và khoảng cách dưới (2rem) */
+    width: 200px;
+    /* Đã giảm kích thước (trước đó là 250px) */
+    height: 200px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 6px solid #FF69B4;
+    /* Viền avatar màu chủ đạo */
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    /* Thêm đổ bóng nhẹ */
+    transition: all 0.3s ease;
+}
+
+.about-page .crew-name {
+    /* Đảm bảo tên vũ đoàn nằm chính giữa */
+    color: #FF69B4 !important;
+    /* Đảm bảo tên nổi bật */
+    font-size: 2rem;
+    font-weight: 700;
+    text-align: center;
+    display: block;
+    width: 100%;
+    margin: 0.5rem auto 0.5rem auto;
+    /* Đảm bảo căn giữa */
+}
+
+.about-page .crew-email a {
+    color: #FFB6C1;
+    /* Màu link nhạt hơn */
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.about-page .crew-email a:hover {
+    color: #FF69B4;
+}
+
+.about-page .crew-slogan {
+    font-size: 1.05rem;
+    line-height: 1.8;
+}
+
+/* Icons Mạng xã hội */
+.about-page .social-links-about {
+    display: flex;
+    justify-content: center;
+    gap: 1.5rem;
+    margin-top: 1.5rem;
+}
+
+.about-page .social-links-about a {
+    color: #FF69B4;
+    /* Màu icon chủ đạo */
+    font-size: 1.8rem;
+    transition: transform 0.2s, color 0.2s;
+}
+
+.about-page .social-links-about a:hover {
+    color: #333;
+    /* Đổi màu khi hover */
+    transform: translateY(-3px);
+}
+
+
+/* Căn chỉnh lại tiêu đề section cho đồng nhất */
+.about-section h2.about-heading-section {
+    color: #333;
+    /* Tiêu đề màu tối cho dễ đọc */
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    /* Dùng màu chủ đạo cho đường gạch chân */
+    border-bottom: 3px solid #FF69B4;
+    padding-bottom: 10px;
+}
+
+/* Đảm bảo icon vẫn màu hồng */
+.about-section h2.about-heading-section svg {
+    color: #FF69B4;
+}
+
+/* Responsive để ảnh không quá to trên thiết bị nhỏ */
+@media (max-width: 600px) {
+    .about-page .founder-avatar {
+        width: 150px;
+        /* Giảm thêm trên mobile */
+        height: 150px;
+        margin: 0 auto 1rem auto;
+    }
+}

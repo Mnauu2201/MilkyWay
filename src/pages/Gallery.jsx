@@ -206,10 +206,10 @@ const Gallery = () => {
             </div>
           )}
 
-          <div className="pagination-info">
+          {/* <div className="pagination-info">
             Hiển thị {startIndex + 1}-{Math.min(endIndex, albums.length)} trong
             tổng số {albums.length} album
-          </div>
+          </div> */}
         </>
       )}
     </div>
