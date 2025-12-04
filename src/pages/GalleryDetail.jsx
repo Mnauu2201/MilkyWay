@@ -4,7 +4,6 @@ import { useParams, useNavigate } from "react-router-dom";
 import { doc, getDoc } from "firebase/firestore";
 import { db } from "@/firebase/config.js";
 import { FiArrowLeft, FiCalendar, FiVideo, FiImage } from "react-icons/fi";
-import ReactPlayer from "react-player";
 import "./GalleryDetail.css";
 
 const GalleryDetail = () => {
@@ -38,49 +37,40 @@ const GalleryDetail = () => {
     fetchAlbum();
   }, [id]);
 
-  // Tạo mã nhúng iframe YouTube
-  const getYouTubeEmbedCode = (url) => {
-    if (url && (url.includes("youtube.com") || url.includes("youtu.be"))) {
-      let videoId = "";
+  // Hàm chuyển đổi YouTube URL sang Embed URL
+  const getYouTubeEmbedUrl = (url) => {
+    if (!url) return null;
 
-      const shortMatch = url.match(/youtu\.be\/([^?&]+)/);
-      if (shortMatch) {
-        videoId = shortMatch[1];
-      }
+    let videoId = "";
 
-      const watchMatch = url.match(/[?&]v=([^&]+)/);
-      if (!videoId && watchMatch) {
-        videoId = watchMatch[1];
-      }
-
-      if (videoId && videoId.includes("?")) {
-        videoId = videoId.split("?")[0];
-      }
-
-      if (videoId) {
-        return (
-          <iframe
-            key={videoId}
-            src={`https://www.youtube.com/embed/${videoId}?rel=0&controls=1&showinfo=0`}
-            title="YouTube video player"
-            frameBorder="0"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-            allowFullScreen
-            width="100%"
-            height="100%"
-          ></iframe>
-        );
-      }
+    // YouTube Shorts
+    if (url.includes("/shorts/")) {
+      const match = url.match(/\/shorts\/([^?&/]+)/);
+      if (match) videoId = match[1];
     }
-    return (
-      <ReactPlayer
-        url={url}
-        className="react-player"
-        width="100%"
-        height="100%"
-        controls={true}
-      />
-    );
+    // youtu.be
+    else if (url.includes("youtu.be")) {
+      const match = url.match(/youtu\.be\/([^?&/]+)/);
+      if (match) videoId = match[1];
+    }
+    // youtube.com/watch
+    else if (url.includes("watch")) {
+      const match = url.match(/[?&]v=([^&]+)/);
+      if (match) videoId = match[1];
+    }
+    // youtube.com/embed
+    else if (url.includes("/embed/")) {
+      const match = url.match(/\/embed\/([^?&/]+)/);
+      if (match) videoId = match[1];
+    }
+
+    // Làm sạch videoId
+    if (videoId) {
+      videoId = videoId.split("?")[0].split("&")[0].split("#")[0];
+      return `https://www.youtube.com/embed/${videoId}`;
+    }
+
+    return null;
   };
 
   if (loading) {
@@ -116,12 +106,41 @@ const GalleryDetail = () => {
           )}
         </div>
 
-        {/* PHẦN VIDEO */}
+        {/* PHẦN VIDEO - DÙNG IFRAME */}
         {album.videoUrl && (
           <section className="gallery-video-section">
             <h2>Video Highlight Sự kiện</h2>
             <div className="player-wrapper">
-              {getYouTubeEmbedCode(album.videoUrl)}
+              {getYouTubeEmbedUrl(album.videoUrl) ? (
+                <iframe
+                  src={getYouTubeEmbedUrl(album.videoUrl)}
+                  title="YouTube video player"
+                  frameBorder="0"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                  allowFullScreen
+                  referrerPolicy="strict-origin-when-cross-origin"
+                  style={{
+                    position: "absolute",
+                    top: 0,
+                    left: 0,
+                    width: "100%",
+                    height: "100%",
+                    border: "none",
+                  }}
+                ></iframe>
+              ) : (
+                <div className="video-error">
+                  <p>⚠️ URL video không hợp lệ</p>
+                  <a
+                    href={album.videoUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="video-link-btn"
+                  >
+                    Xem trên YouTube
+                  </a>
+                </div>
+              )}
             </div>
           </section>
         )}
