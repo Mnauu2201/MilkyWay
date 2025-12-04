@@ -79,10 +79,10 @@ const Home = () => {
 
   // Stats data
   const stats = [
-    { icon: FiUsers, number: "50+", label: "Thành viên" },
-    { icon: FiAward, number: "20+", label: "Giải thưởng" },
+    { icon: FiUsers, number: "?", label: "Thành viên" },
+    { icon: FiAward, number: "10+", label: "Giải thưởng" },
     { icon: FiTrendingUp, number: "100+", label: "Sự kiện" },
-    { icon: FiPlay, number: "5+", label: "Năm kinh nghiệm" },
+    { icon: FiPlay, number: "6+", label: "Năm kinh nghiệm" },
   ];
 
   // Member highlights
@@ -189,16 +189,6 @@ const Home = () => {
             }}
           />
         </div>
-
-        {/* Scroll indicator */}
-        <motion.div
-          className="scroll-indicator"
-          animate={{ y: [0, 10, 0] }}
-          transition={{ duration: 1.5, repeat: Infinity }}
-        >
-          <span>Scroll</span>
-          <div className="scroll-line"></div>
-        </motion.div>
       </section>
 
       {/* Stats Section */}

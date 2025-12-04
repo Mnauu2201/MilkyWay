@@ -114,104 +114,109 @@ const Gallery = () => {
   }
 
   return (
-    <div className="gallery-container">
-      <div className="gallery-header">
+    // SỬA: Bọc toàn bộ trang bằng page-container để xử lý padding-top chống fixed header
+    <div className="page-container gallery-page">
+      {/* SỬA: Đưa page-header ra ngoài container có max-width để nó kéo dài toàn màn hình */}
+      <div className="page-header">
         <h1>Thư viện Ảnh & Video</h1>
         <p>Những khoảnh khắc đáng nhớ của MilkyWay Dance</p>
       </div>
 
-      {albums.length === 0 ? (
-        <div className="no-albums">
-          <p>Chưa có album nào.</p>
-        </div>
-      ) : (
-        <>
-          <div className="gallery-grid">
-            {currentAlbums.map((album) => (
-              <div
-                key={album.id}
-                className="gallery-card"
-                onClick={() => navigate(`/gallery/${album.id}`)}
-              >
-                <div className="card-image">
-                  <img
-                    src={getThumbnail(album)}
-                    alt={album.title || "Album"}
-                    loading="lazy"
-                    onError={(e) => {
-                      e.target.onerror = null;
-                      e.target.src =
-                        "https://via.placeholder.com/400x300/cccccc/666666?text=Error";
-                    }}
-                  />
-                  <div className="card-overlay">
-                    <div className="card-icons">
-                      {album.images && album.images.length > 0 && (
-                        <span className="icon-badge">
-                          <FiImage /> {album.images.length}
-                        </span>
-                      )}
-                      {album.videoUrl && (
-                        <span className="icon-badge video-badge">
-                          <FiVideo />
-                        </span>
-                      )}
+      {/* GALLERY CONTAINER: Giờ đây chỉ giới hạn chiều rộng cho lưới ảnh và phân trang */}
+      <div className="gallery-container">
+        {albums.length === 0 ? (
+          <div className="no-albums">
+            <p>Chưa có album nào.</p>
+          </div>
+        ) : (
+          <>
+            <div className="gallery-grid">
+              {currentAlbums.map((album) => (
+                <div
+                  key={album.id}
+                  className="gallery-card"
+                  onClick={() => navigate(`/gallery/${album.id}`)}
+                >
+                  <div className="card-image">
+                    <img
+                      src={getThumbnail(album)}
+                      alt={album.title || "Album"}
+                      loading="lazy"
+                      onError={(e) => {
+                        e.target.onerror = null;
+                        e.target.src =
+                          "https://via.placeholder.com/400x300/cccccc/666666?text=Error";
+                      }}
+                    />
+                    <div className="card-overlay">
+                      <div className="card-icons">
+                        {album.images && album.images.length > 0 && (
+                          <span className="icon-badge">
+                            <FiImage /> {album.images.length}
+                          </span>
+                        )}
+                        {album.videoUrl && (
+                          <span className="icon-badge video-badge">
+                            <FiVideo />
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                  <div className="card-content">
+                    <h3>{album.title || "Untitled"}</h3>
+                    <div className="card-date">
+                      <FiCalendar />
+                      <span>{album.date || "N/A"}</span>
                     </div>
                   </div>
                 </div>
-                <div className="card-content">
-                  <h3>{album.title || "Untitled"}</h3>
-                  <div className="card-date">
-                    <FiCalendar />
-                    <span>{album.date || "N/A"}</span>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-
-          {totalPages > 1 && (
-            <div className="pagination">
-              <button
-                className="pagination-btn"
-                onClick={() => goToPage(currentPage - 1)}
-                disabled={currentPage === 1}
-              >
-                ← Trước
-              </button>
-
-              <div className="pagination-numbers">
-                {Array.from({ length: totalPages }, (_, i) => i + 1).map(
-                  (page) => (
-                    <button
-                      key={page}
-                      className={`page-number ${
-                        currentPage === page ? "active" : ""
-                      }`}
-                      onClick={() => goToPage(page)}
-                    >
-                      {page}
-                    </button>
-                  )
-                )}
-              </div>
-
-              <button
-                className="pagination-btn"
-                onClick={() => goToPage(currentPage + 1)}
-                disabled={currentPage === totalPages}
-              >
-                Sau →
-              </button>
+              ))}
             </div>
-          )}
 
-          {/* <div className="pagination-info">
-            Hiển thị {startIndex + 1}-{Math.min(endIndex, albums.length)} trong
-            tổng số {albums.length} album
-          </div> */}
-        </>
-      )}
+            {totalPages > 1 && (
+              <div className="pagination">
+                <button
+                  className="pagination-btn"
+                  onClick={() => goToPage(currentPage - 1)}
+                  disabled={currentPage === 1}
+                >
+                  ← Trước
+                </button>
+
+                <div className="pagination-numbers">
+                  {Array.from({ length: totalPages }, (_, i) => i + 1).map(
+                    (page) => (
+                      <button
+                        key={page}
+                        className={`page-number ${
+                          currentPage === page ? "active" : ""
+                        }`}
+                        onClick={() => goToPage(page)}
+                      >
+                        {page}
+                      </button>
+                    )
+                  )}
+                </div>
+
+                <button
+                  className="pagination-btn"
+                  onClick={() => goToPage(currentPage + 1)}
+                  disabled={currentPage === totalPages}
+                >
+                  Sau →
+                </button>
+              </div>
+            )}
+
+            <div className="pagination-info">
+              Hiển thị {startIndex + 1}-{Math.min(endIndex, albums.length)}{" "}
+              trong tổng số {albums.length} album
+            </div>
+          </>
+        )}
+      </div>
     </div>
   );
 };

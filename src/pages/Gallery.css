@@ -3,25 +3,22 @@
 .gallery-container {
     max-width: 1200px;
     margin: 0 auto;
-    padding: 2rem;
+    /* SỬA: Loại bỏ padding-top lớn (vì page-header đã lo) và chỉ giữ padding chung cho nội dung */
+    padding: 2rem 2rem;
     min-height: 100vh;
 }
 
+/* XÓA: Loại bỏ các style của gallery-header vì đã dùng page-header từ PageDefaults.css */
 .gallery-header {
-    text-align: center;
-    margin-bottom: 3rem;
+    display: none;
 }
 
 .gallery-header h1 {
-    color: #ff69b4;
-    font-size: 2.5rem;
-    margin-bottom: 0.5rem;
-    font-weight: 700;
+    display: none;
 }
 
 .gallery-header p {
-    color: #666;
-    font-size: 1.1rem;
+    display: none;
 }
 
 /* GALLERY GRID - 3x3 */
@@ -222,10 +219,6 @@
 @media (max-width: 768px) {
     .gallery-container {
         padding: 1rem;
-    }
-
-    .gallery-header h1 {
-        font-size: 2rem;
     }
 
     .gallery-grid {
